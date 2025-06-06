@@ -25,7 +25,5 @@ mcp:
       args: ["D:/GitRepo/rag-mcp-agent/Servers/RAGSearch.py"]
 
 openai:
-  # 将 API 调整为阿里云百炼大模型平台的 OpenAI 兼容 API
   base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
-  # 模型选用 qwen-turbo
   default_model: "qwen-turbo"

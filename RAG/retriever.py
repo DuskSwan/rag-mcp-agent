@@ -1,9 +1,6 @@
 from pathlib import Path
 import os
-import re
 import json
-import requests
-from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
 import numpy as np
 import faiss
@@ -50,30 +47,7 @@ def scrape_and_process_url(url_line):
     description = ' '.join(parts[1:])
 
     print(f"正在处理: {url}")
-    try:
-        # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-        # response = requests.get(url, headers=headers, timeout=10)
-        # response.raise_for_status() # 如果请求失败则抛出异常
-        
-        # soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # # 提取标题和主体文本
-        # title = soup.title.string if soup.title else ''
-        # # 移除脚本和样式标签
-        # for script_or_style in soup(['script', 'style']):
-        #     script_or_style.decompose()
-            
-        # 获取文本并清理
-        # text = ' '.join(t.strip() for t in soup.stripped_strings)
-        
-        # 组合所有信息：URL描述 + 网页标题 + 网页内容
-        # full_text = f"{description} {title} {text}".strip()
-        full_text = f"{description} {url}".strip()  # 简化处理，直接使用描述和URL
-        return full_text
-
-    except requests.RequestException as e:
-        print(f"抓取失败: {url}, 错误: {e}")
-        return None # 返回None表示失败
+    return f"{description}: {url}".strip()  # 简化处理，直接使用描述和URL
 
 # --- 2. 检索器核心类 ---
 

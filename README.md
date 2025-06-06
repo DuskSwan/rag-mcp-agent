@@ -1,6 +1,6 @@
 # rag-mcp-agent
 
-我希望搭建一个包含rag和mcp的多智能体框架。该项目用于实现“信息搜索”功能，计划包含三个agent，一个用于从知识库中搜索相关url，一个借助mcp server来从特定url获取信息，最后一个根据获取的信息总结。
+一个包含rag和mcp的多智能体框架。该项目用于实现“信息搜索”功能，总共包含四个agent，A用于从知识库中搜索相关url，B通过联网搜索获取相关url，C从特定url获取信息，D根据获取的信息总结出最终结果。AB并行，\[AB\]CD串行。
 
 ## requirements
 
@@ -16,4 +16,4 @@
 
 ### 知识库
 
-用sentence_transformers库来实现知识库的检索，这部分代码是Gemini写的
+用sentence_transformers库来实现知识库的检索，这部分代码是Gemini写的。需要库faiss-cpu，sentence-transformers
