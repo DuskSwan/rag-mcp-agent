@@ -12,11 +12,11 @@ from prompts import url_agent_instruction, summarizer_agent_instruction, web_sea
 app = MCPApp(name="web_info_search")
 
 async def main(query: str):
-    # 初始化RAG
-
+    # TODO: 将初始化RAG挪到main中
     # 调用agent
     async with app.run() as mcp_agent_app:
         logger = mcp_agent_app.logger
+
         # 创建需要的agent
         web_searcher_agent = Agent(
             name="web_searcher",
@@ -48,14 +48,9 @@ async def main(query: str):
 
 async def web_search(query: str, agent: Agent, logger):
     async with agent:
-        # 确保 MCP Server 初始化完成, 可以被 LLM 使用
         tools = await agent.list_tools()
         logger.info("可用工具:", data=tools)
-
-        # Attach an OpenAI LLM to the agent
         llm = await agent.attach_llm(OpenAIAugmentedLLM)
-
-        # 使用 MCP Server -> websearch 获取相关网页链接
         result = await llm.generate_str(
             message=f"请根据用户的查询【{query}】返回相关的网页链接列表。"
         )
@@ -64,14 +59,9 @@ async def web_search(query: str, agent: Agent, logger):
 
 async def rag_search(query: str, agent: Agent, logger):
     async with agent:
-        # 确保 MCP Server 初始化完成, 可以被 LLM 使用
         tools = await agent.list_tools()
         logger.info("可用工具:", data=tools)
-
-        # Attach an OpenAI LLM to the agent
         llm = await agent.attach_llm(OpenAIAugmentedLLM)
-
-        # 使用 MCP Server -> RAG Search 获取相关网页链接
         result = await llm.generate_str(
             message=f"请根据用户的查询【{query}】返回相关的网页链接列表。"
         )
@@ -83,11 +73,7 @@ async def fetch(urls: str, agent: Agent, logger):
         # 确保 MCP Server 初始化完成, 可以被 LLM 使用
         tools = await agent.list_tools()
         logger.info("可用工具:", data=tools)
-
-        # Attach an OpenAI LLM to the agent
         llm = await agent.attach_llm(OpenAIAugmentedLLM)
-
-        # 使用 MCP Server -> fetch 获取指定 URL 网页内容
         result = await llm.generate_str(
             message=f"从以下url获取信息: {urls}"
         )
