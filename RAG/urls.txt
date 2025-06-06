@@ -1,0 +1,24 @@
+https://www.freecodecamp.org/ A non-profit organization offering free coding tutorials and certifications
+https://realpython.com/ A resource for comprehensive Python programming tutorials and articles
+https://www.w3schools.com/python/ A popular reference website for learning the Python language
+https://github.com/ A leading platform for code hosting, version control, and collaboration
+
+https://en.wikipedia.org/wiki/Barack_Obama Wikipedia's encyclopedia entry on Barack Obama
+https://www.britannica.com/biography/Barack-Obama Britannica's encyclopedia biography of Barack Obama
+https://www.history.com/articles/barack-obama History.com's articles and information related to Barack Obama
+
+https://www.smartnation.gov.sg/ Singapore Smart Nation Initiative (English)
+https://aisingapore.org/ AI Singapore (AISG) - National AI Program (English)
+https://www.mas.gov.sg/development/sustainable-finance Monetary Authority of Singapore - Sustainable Finance (English)
+https://www.greenplan.gov.sg/ Singapore Green Plan 2030 (English)
+https://www.zaobao.com.sg/ Lianhe Zaobao (Chinese News)
+https://www.straitstimes.com/singapore The Straits Times (English News)
+https://www.reuters.com/technology/ Reuters - Technology News (English)
+https://www.bloomberg.com/markets Bloomberg - Markets News (English)
+https://zh.wikipedia.org/wiki/%E5%A4%A7%E8%AA%9E%E8%A8%80%E6%A8%A1%E5%9E%8B Wikipedia - Large Language Model (Chinese)
+https://techcrunch.com/category/artificial-intelligence/ TechCrunch - Artificial Intelligence Section (English)
+https://pytorch.org/ PyTorch Official Website (English)
+https://research.google/blog/ Google Research - AI-related Blog (English)
+https://www.nlb.gov.sg/ National Library Board, Singapore (English)
+https://en.wikipedia.org/wiki/History_of_Singapore Wikipedia - History of Singapore (English)
+https://www.example.com/this-is-a-deliberately-broken-link A deliberately broken link for error handling

@@ -15,9 +15,14 @@ mcp:
     fetch:
       command: "uvx"
       args: ["mcp-server-fetch"]
-    websearch:
+    webSearch:
       command: "D:/GitRepo/rag-mcp-agent/.venv/Scripts/python.exe"
       args: ["D:/GitRepo/rag-mcp-agent/Servers/BraveSearch.py"]
+      # transport: streamable_http
+      # url: http://127.0.0.1:8888/mcp
+    ragSearch:
+      command: "D:/GitRepo/rag-mcp-agent/.venv/Scripts/python.exe"
+      args: ["D:/GitRepo/rag-mcp-agent/Servers/RAGSearch.py"]
 
 openai:
   # 将 API 调整为阿里云百炼大模型平台的 OpenAI 兼容 API
