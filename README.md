@@ -13,3 +13,7 @@
 自定义mcp server，通过brave search API搜索网页，需要库langchain-community，fastmcp
 
 从网页获取内容的server fetch来自第三方，使用指令`uvx mcp-server-fetch`
+
+### 知识库
+
+用sentence_transformers库来实现知识库的检索，这部分代码是Gemini写的

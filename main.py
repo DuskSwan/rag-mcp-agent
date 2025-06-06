@@ -8,14 +8,19 @@ from mcp_agent.app import MCPApp
 from mcp_agent.agents.agent import Agent
 from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
 
-from src import url_agent_instruction, summarizer_agent_instruction
+from prompts import url_agent_instruction, summarizer_agent_instruction, search_agent_instruction
 
 app = MCPApp(name="web_info_search")
 
-async def main(urls:list[str], query: str):
+async def main(query: str):
     async with app.run() as mcp_agent_app:
         logger = mcp_agent_app.logger
         # 创建需要的agent
+        searcher_agent = Agent(
+            name="searcher",
+            instruction=search_agent_instruction,
+            server_names=["websearch"],  # 声明 agent 可以使用的 mcp server
+        )
         fetcher_agent = Agent(
             name="fetcher",
             instruction=url_agent_instruction,
@@ -25,11 +30,30 @@ async def main(urls:list[str], query: str):
             name="summarizer",
             instruction=summarizer_agent_instruction,
         )
-        urls_res = await fetch(urls, fetcher_agent, logger)
+        # 执行过程
+        search_result = await search(query, searcher_agent, logger)
+        urls_res = await fetch(search_result, fetcher_agent, logger)
         final_result = await summarize(urls_res, query, summarizer_agent, logger)
 
+        logger.info(f"最终结果: \n{final_result}")
 
-async def fetch(urls: list[str], agent: Agent, logger):
+async def search(query: str, agent: Agent, logger):
+    async with agent:
+        # 确保 MCP Server 初始化完成, 可以被 LLM 使用
+        tools = await agent.list_tools()
+        logger.info("可用工具:", data=tools)
+
+        # Attach an OpenAI LLM to the agent
+        llm = await agent.attach_llm(OpenAIAugmentedLLM)
+
+        # 使用 MCP Server -> websearch 获取相关网页链接
+        result = await llm.generate_str(
+            message=f"请根据用户的查询【{query}】返回相关的网页链接列表。"
+        )
+        logger.info(f"搜索结果: \n{result}")
+    return result
+
+async def fetch(urls: str, agent: Agent, logger):
     async with agent:
         # 确保 MCP Server 初始化完成, 可以被 LLM 使用
         tools = await agent.list_tools()
@@ -55,13 +79,5 @@ async def summarize(content: str, query: str, agent: Agent, logger):
     return result
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description='Process some integers.')
-    # parser.add_argument('--url', type=str, required=True, help='The URL to fetch')
-    # args = parser.parse_args()
-    urls = [
-        r'https://en.wikipedia.org/wiki/Barack_Obama',
-        r'https://www.britannica.com/biography/Barack-Obama',
-        r'https://www.history.com/articles/barack-obama',
-    ]
-    query = "奥巴马的生平和成就是什么？"
-    asyncio.run(main(urls, query))
+    query = "What is Obama's life and achievements?"
+    asyncio.run(main(query))

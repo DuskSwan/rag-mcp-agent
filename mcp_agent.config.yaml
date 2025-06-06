@@ -7,6 +7,7 @@ logger:
   transports: ["console", "file"]
   path: "mcp-agent.log"
   progress_display: true
+  show_progress: true
 
 
 mcp:
@@ -14,6 +15,9 @@ mcp:
     fetch:
       command: "uvx"
       args: ["mcp-server-fetch"]
+    websearch:
+      command: "D:/GitRepo/rag-mcp-agent/.venv/Scripts/python.exe"
+      args: ["D:/GitRepo/rag-mcp-agent/Servers/BraveSearch.py"]
 
 openai:
   # 将 API 调整为阿里云百炼大模型平台的 OpenAI 兼容 API
