@@ -1,9 +1,12 @@
+from typing import Optional, List
 from pathlib import Path
 import os
 import json
-from sentence_transformers import SentenceTransformer
+
 import numpy as np
 import faiss
+from sentence_transformers import SentenceTransformer
+
 
 # --- 全局配置 ---
 # rag_dir = Path('RAG')
@@ -25,18 +28,6 @@ def load_urls_from_file(file_path: str):
         lines = [line.strip() for line in f if line.strip()]
     return lines
 
-def load_cache():
-    """加载缓存文件。"""
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-
-def save_cache(cache):
-    """保存缓存到文件。"""
-    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(cache, f, indent=4)
-
 def scrape_and_process_url(url_line):
     """
     抓取单个URL的内容，并提取文本。
@@ -55,7 +46,7 @@ class UrlRetriever:
     def __init__(self, model_name=MODEL_NAME):
         print("正在加载 Sentence Transformer 模型...")
         self.model = SentenceTransformer(model_name)
-        self.index = None
+        self.index: Optional[faiss.Index] = None 
         self.url_list = []
 
     def build_index(self, url_lines, force_rebuild=False):
@@ -76,38 +67,25 @@ class UrlRetriever:
             return
 
         print("正在构建新的FAISS索引...")
-        cache = load_cache()
         all_texts = []
-        valid_urls = []
-
         for url_line in self.url_list:
-            # 如果强制重建，则不使用缓存
-            if force_rebuild or url_line not in cache:
-                text = scrape_and_process_url(url_line)
-                if text:
-                    cache[url_line] = text
-            
-            # 从缓存中获取文本（可能刚刚存入）
-            if url_line in cache:
-                all_texts.append(cache[url_line])
-                valid_urls.append(url_line)
-
-        # 更新URL列表，只保留成功处理的
-        self.url_list = valid_urls
-        save_cache(cache)
-
-        if not all_texts:
-            print("没有可用于建立索引的有效内容。")
-            return
+            text = scrape_and_process_url(url_line)
+            all_texts.append(text)
             
         print(f"正在将 {len(all_texts)} 个文档转换为向量...")
         embeddings = self.model.encode(all_texts, show_progress_bar=True)
         
         # 创建FAISS索引
         embedding_dim = embeddings.shape[1]
-        self.index = faiss.IndexFlatL2(embedding_dim) # L2距离索引
-        self.index.add(np.array(embeddings, dtype='float32'))
-        
+        # self.index = faiss.IndexFlatL2(embedding_dim) # L2距离索引
+        self.index = faiss.IndexFlatIP(embedding_dim) # 内积索引
+
+        # nlist: 定义要创建多少个“分区”或“聚类中心”。一个经验法则是设为文档数量的平方根的4倍左右。
+        # nlist = int(4 * np.sqrt(embeddings.shape[0]))
+        # quantizer = faiss.IndexFlatIP(embedding_dim)  # 使用内积索引作为量化器
+        # self.index = faiss.IndexIVFFlat(quantizer, embedding_dim, nlist, faiss.METRIC_INNER_PRODUCT) # 使用内积作为距离度量
+
+        self.index.add(np.array(embeddings, dtype='float32')) # type: ignore
         print(f"索引构建完成，共 {self.index.ntotal} 个向量。")
         faiss.write_index(self.index, str(INDEX_FILE))
         print(f"索引已保存到 '{INDEX_FILE}'。")
@@ -123,7 +101,7 @@ class UrlRetriever:
         query_embedding = self.model.encode([query])
         
         # 在FAISS索引中搜索
-        distances, indices = self.index.search(np.array(query_embedding, dtype='float32'), top_k)
+        distances, indices = self.index.search(np.array(query_embedding, dtype='float32'), top_k) # type: ignore
         
         results = []
         for i in indices[0]:

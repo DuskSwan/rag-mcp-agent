@@ -56,4 +56,5 @@ async def main(query: str):
 
 if __name__ == "__main__":
     query = "What is Obama's life and achievements?"
+    # query = "What is the latest news about Singapore?"
     asyncio.run(main(query))
